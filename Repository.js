@@ -1,4 +1,4 @@
-const [getDate, getTime] = require('./date');
+const [getDate, getTime] = require('./Date');
 
 const Repository = class {
     constructor(name, location) {
