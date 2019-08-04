@@ -1,7 +1,5 @@
 const Repository = require('./Repository');
 const File = require('./File');
-const Command = require('./Command');
-const Repository = require('./Repository');
 const rl = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
@@ -9,7 +7,6 @@ const rl = require('readline').createInterface({
 
 function VMGitContoller() {
     this.FILE_STATUS = ['untracked', 'modified', 'staged', 'unmodified'];
-    this.commands = [];
     this.remoteRepositories = new Map();
     this.localRepositories = new Map();
     this.prmt = "/>";
@@ -24,17 +21,17 @@ VMGitContoller.prototype = {
             if (cmd === "quit") {
                 rl.close();
             } else {
-                this.setCommand();
                 this.runCommand(cmd);
+                rl.prompt();
             }
         });
     },
-    setCommand: function() {
-
-    }
-    ,
     runCommand: function (cmd) {
-        
+        try {
+
+        } catch (err) {
+
+        }
     }
 }
 
