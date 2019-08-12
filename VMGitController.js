@@ -8,7 +8,8 @@ function VMGitContoller() {
     this.FILE_STATUS = ['untracked', 'modified', 'staged', 'unmodified'];
     this.localRepositories = new Map();
     this.remoteRepositories = new Map();
-    this.prmt = "/>";
+    this.command = new Command(this.localRepositories, this.remoteRepositories);
+    this.prmt = this.command.getPrompt();
 }
 
 VMGitContoller.prototype = {
@@ -27,8 +28,10 @@ VMGitContoller.prototype = {
     },
     runCommand: function (cmd) {
         try {
-            command = new Command(cmd,  this.localRepositories, this.remoteRepositories);
-            command.run();
+            this.command.set(cmd);
+            this.command.run();
+            this.prmt = this.command.getPrompt();
+            rl.setPrompt(this.prmt);
         } catch (err) {
             console.log(err);
         }

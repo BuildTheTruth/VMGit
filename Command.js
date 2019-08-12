@@ -2,14 +2,21 @@ const Repository = require('./Repository');
 const File = require('./File');
 const MESSAGE = require('./Message');
 class Command {
-    constructor(cmd, locals, remotes) {
+    constructor(locals, remotes) {
         this.map = new Map();
-        [this.act, ...this.opts] = cmd.split(' ');
         this.locals = locals;
         this.remotes = remotes;
+        this.checkouted = null;
+        this.act = null;
+        this.opts = null;
+        this.run = null;
         this.setMap();
-        this.run = this.map.get(this.act);
-        this.checkoutedRepositoryName = null;
+    }
+
+    set(cmd) {
+        const [act, ...opts] = cmd.split(' ');
+        if (!this.map.has(act)) throw MESSAGE.UNDEFINED_COMMAND;
+        this.run = this.map.get(act).bind(this, opts);
     }
 
     setMap() {
@@ -24,26 +31,31 @@ class Command {
         this.map.set('push', this.pushRemoteRepository);
     }
 
-    createRepository() {
-        const repositoryName = this.opts[0];
+    getPrompt() {
+        if (this.checkouted) return `/${this.checkouted.name}/`;
+        else return "/>";
+    }
+
+    createRepository(opts) {
+        const repositoryName = opts[0];
         if (!repositoryName) throw MESSAGE.EMPTY_NAME;
         this.locals.set(repositoryName, new Repository(repositoryName, 'local'));
         console.log(`created '${repositoryName}' repository.`);
     }
 
-    showStatus() {
-        const [location, repositoryName] = this.opts;
-        if(this.checkoutedRepositoryName) {
+    showStatus(opts) {
+        const [location, repositoryName] = opts;
+        if (this.checkouted) {
 
         } else {
             switch (location) {
                 case 'local':
-                    if (!repositoryName) throw MESSAGE.UNDEFINED_REPOSITOR;
+                    if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
                     const localRepository = this.locals.get(repositoryName);
                     this.showFilesOfRepository(localRepository);
                     break;
                 case 'remote':
-                    if (!repositoryName) throw MESSAGE.UNDEFINED_REPOSITOR;
+                    if (!this.remotes.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
                     const remoteRepository = this.remotes.get(repositoryName);
                     this.showFilesOfRepository(remoteRepository);
                     break;
@@ -67,8 +79,14 @@ class Command {
         }
     }
 
-    checkoutRepository() {
-
+    checkoutRepository(opts) {
+        if (this.checkouted && opts.length == 0) {
+            this.checkouted = null;
+        } else {
+            const repositoryName = opts[0];
+            if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
+            this.checkouted = this.locals.get(repositoryName);
+        }
     }
 
     createFile() {
@@ -94,7 +112,6 @@ class Command {
     pushRemoteRepository() {
 
     }
-
 }
 
 module.exports = Command;
