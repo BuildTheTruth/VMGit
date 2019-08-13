@@ -5,7 +5,6 @@ const rl = require('readline').createInterface({
 });
 
 function VMGitContoller() {
-    this.FILE_STATUS = ['untracked', 'modified', 'staged', 'unmodified'];
     this.localRepositories = new Map();
     this.remoteRepositories = new Map();
     this.command = new Command(this.localRepositories, this.remoteRepositories);

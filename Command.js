@@ -1,5 +1,5 @@
 const Repository = require('./Repository');
-const File = require('./File');
+const [File, FILE_STATUS] = require('./File');
 const MESSAGE = require('./Message');
 class Command {
     constructor(locals, remotes) {
@@ -45,17 +45,17 @@ class Command {
 
     showStatus(opts) {
         const [location, repositoryName] = opts;
-        if (this.checkouted) {
-
+        if (this.checkouted && !location) {
+            this.showCheckoutedFiles();
         } else {
             switch (location) {
                 case 'local':
-                    if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
+                    if (!this.locals.has(repositoryName)) throw MESSAGE.EMPTY_NAME;
                     const localRepository = this.locals.get(repositoryName);
                     this.showFilesOfRepository(localRepository);
                     break;
                 case 'remote':
-                    if (!this.remotes.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
+                    if (!this.remotes.has(repositoryName)) throw MESSAGE.EMPTY_NAME;
                     const remoteRepository = this.remotes.get(repositoryName);
                     this.showFilesOfRepository(remoteRepository);
                     break;
@@ -67,12 +67,31 @@ class Command {
         }
     }
 
+    showCheckoutedFiles() {
+        console.log("---Working Directory/");
+        this.showFilesByStatus(FILE_STATUS.MODIFIED);
+        this.showFilesByStatus(FILE_STATUS.UNTRACKED);
+        console.log("---Staging Area/");
+        this.showFilesByStatus(FILE_STATUS.STAGED);
+        console.log("---Git Repository/");
+        this.showFilesByStatus(FILE_STATUS.UNMODIFIED);
+        console.log();
+    }
+
+    showFilesByStatus(status) {
+        this.checkouted.files.forEach((file)=> {
+            if(file.status === status) {
+                console.log(`${file.name}  ${file.date} ${file.time}`)
+            }
+        });
+    }
+
     showFilesOfRepository(repository) {
         let result = `/${repository.name}/`;
         const files = repository.files;
         if (files.length > 0) {
             files.forEach((file) => {
-                console.log(result + `${file.name}`);
+                console.log(result + file.name);
             });
         } else {
             console.log(result);
