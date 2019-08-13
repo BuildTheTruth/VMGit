@@ -50,12 +50,12 @@ class Command {
         } else {
             switch (location) {
                 case 'local':
-                    if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
+                    if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
                     const localRepository = this.locals.get(repositoryName);
                     this.showFilesOfRepository(localRepository);
                     break;
                 case 'remote':
-                    if (!this.remotes.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
+                    if (!this.remotes.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
                     const remoteRepository = this.remotes.get(repositoryName);
                     this.showFilesOfRepository(remoteRepository);
                     break;
@@ -84,13 +84,17 @@ class Command {
             this.checkouted = null;
         } else {
             const repositoryName = opts[0];
-            if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITOR;
+            if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
             this.checkouted = this.locals.get(repositoryName);
         }
     }
 
-    createFile() {
-
+    createFile(opts) {
+        if (!this.checkouted) throw MESSAGE.UNCHECKOUTED_REPOSITORY;
+        const fileName = opts[0];
+        const file = new File(fileName);
+        this.checkouted.files.push(file);
+        console.log(`created '${fileName}' file in ${this.checkouted.name}.`);
     }
 
     addStagingArea() {
