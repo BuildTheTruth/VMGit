@@ -1,14 +1,14 @@
 const Repository = require('./Repository');
 const [File, FILE_STATUS] = require('./File');
 const MESSAGE = require('./Message');
+const Log = require('./Log');
 class Command {
     constructor(locals, remotes) {
         this.map = new Map();
         this.locals = locals;
         this.remotes = remotes;
+        this.logs = [];
         this.checkouted = null;
-        this.act = null;
-        this.opts = null;
         this.run = null;
         this.setMap();
     }
@@ -79,8 +79,8 @@ class Command {
     }
 
     showFilesByStatus(status) {
-        this.checkouted.files.forEach((file)=> {
-            if(file.status === status) {
+        this.checkouted.files.forEach((file) => {
+            if (file.status === status) {
                 console.log(`${file.name}  ${file.date} ${file.time}`)
             }
         });
@@ -118,16 +118,26 @@ class Command {
 
     addStagingArea(opts) {
         const fileName = opts[0];
-        if(!fileName) throw MESSAGE.EMPTY_NAME;
-        const target = this.checkouted.files.filter((file)=> {
+        const target = this.checkouted.files.filter((file) => {
             return file.name === fileName;
         })[0];
+        if (!target) throw MESSAGE.UNDEFINED_FILE;
         target.status = FILE_STATUS.STAGED;
         this.showCheckoutedFiles();
     }
 
-    commitGitRepository() {
-
+    commitGitRepository(opts) {
+        const msg = opts.reduce((total, current) => {
+            return total + current + ' ';
+        }, "");
+        const stagingFiles = this.checkouted.files.filter((file) => {
+            return file.status === FILE_STATUS.STAGED;
+        });
+        stagingFiles.forEach((file) => {
+            file.status = FILE_STATUS.UNMODIFIED;
+        });
+        this.showCheckoutedFiles();
+        this.logs.push(new Log(msg, stagingFiles));
     }
 
     touchFile() {
