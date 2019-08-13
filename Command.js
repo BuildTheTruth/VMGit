@@ -116,8 +116,14 @@ class Command {
         console.log(`created '${fileName}' file in ${this.checkouted.name}.`);
     }
 
-    addStagingArea() {
-
+    addStagingArea(opts) {
+        const fileName = opts[0];
+        if(!fileName) throw MESSAGE.EMPTY_NAME;
+        const target = this.checkouted.files.filter((file)=> {
+            return file.name === fileName;
+        })[0];
+        target.status = FILE_STATUS.STAGED;
+        this.showCheckoutedFiles();
     }
 
     commitGitRepository() {
