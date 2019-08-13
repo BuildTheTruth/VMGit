@@ -1,4 +1,4 @@
-const Repository = require('./Repository');
+const [Repository, REPOSITORY_LOCATION] = require('./Repository');
 const [File, FILE_STATUS] = require('./File');
 const MESSAGE = require('./Message');
 const Log = require('./Log');
@@ -39,7 +39,7 @@ class Command {
     createRepository(opts) {
         const repositoryName = opts[0];
         if (!repositoryName) throw MESSAGE.EMPTY_NAME;
-        this.locals.set(repositoryName, new Repository(repositoryName, 'local'));
+        this.locals.set(repositoryName, new Repository(repositoryName, REPOSITORY_LOCATION.LOCAL));
         console.log(`created '${repositoryName}' repository.`);
     }
 

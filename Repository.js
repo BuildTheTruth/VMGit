@@ -1,5 +1,10 @@
 const [getDate, getTime] = require('./Date');
 
+const REPOSITORY_LOCATION = {
+    LOCAL : 0,
+    REMOTE : 1
+}
+
 const Repository = class {
     constructor(name, location) {
         this.name = name;
@@ -10,4 +15,4 @@ const Repository = class {
     }
 }
 
-module.exports = Repository;
+module.exports = [Repository, REPOSITORY_LOCATION];
