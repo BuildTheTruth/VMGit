@@ -16,19 +16,20 @@ class Command {
     set(cmd) {
         const [act, ...opts] = cmd.split(' ');
         if (!this.map.has(act)) throw MESSAGE.UNDEFINED_COMMAND;
-        this.run = this.map.get(act).bind(this, opts);
+        this.run = this.map.get(act).run.bind(this, opts);
     }
 
     setMap() {
-        this.map.set('init', this.createRepository);
-        this.map.set('status', this.showStatus);
-        this.map.set('checkout', this.checkoutRepository);
-        this.map.set('new', this.createFile);
-        this.map.set('add', this.addStagingArea);
-        this.map.set('commit', this.commitGitRepository);
-        this.map.set('touch', this.touchFile);
-        this.map.set('log', this.showLog);
-        this.map.set('push', this.pushRemoteRepository);
+        this.map.set('init', { run: this.createRepository, desc: "Create new repository in the local." });
+        this.map.set('status', { run: this.showStatus, desc: "Show current situation in the local or remote repository." });
+        this.map.set('checkout', { run: this.checkoutRepository, desc: "Select the repository to control" });
+        this.map.set('new', { run: this.createFile, desc: "Create new file in checkouted repository." });
+        this.map.set('add', { run: this.addStagingArea, desc: "Move a file from working directory to staging area." });
+        this.map.set('commit', { run: this.commitGitRepository, desc: "Move the files from staging area to git repository." });
+        this.map.set('touch', { run: this.touchFile, desc: "Modify a file." });
+        this.map.set('log', { run: this.showLog, desc: "Show logs committed message and list of files." });
+        this.map.set('push', { run: this.pushRemoteRepository, desc: "Move the files from local repository to remote repository." });
+        this.map.set('help', { run: this.showHelp, desc: "Show the information of commands." });
     }
 
     getPrompt() {
@@ -142,17 +143,18 @@ class Command {
 
     touchFile(opts) {
         const fileName = opts[0];
-        const target = this.checkouted.files.filter((file)=> {
+        const target = this.checkouted.files.filter((file) => {
             return file.name === fileName;
         })[0];
+        if(!target) throw MESSAGE.UNDEFINED_FILE;
         target.status = FILE_STATUS.MODIFIED;
         this.showCheckoutedFiles();
     }
 
     showLog() {
-        this.logs.forEach((log)=> {
+        this.logs.forEach((log) => {
             console.log(`commit "${log.msg}"    ${log.date} ${log.time}`);
-            log.files.forEach((file)=> {
+            log.files.forEach((file) => {
                 console.log(`${file.name}   ${file.date} ${file.time}`);
             });
         });
@@ -160,6 +162,14 @@ class Command {
 
     pushRemoteRepository() {
 
+    }
+
+    showHelp() {
+        console.log();
+        for (const [key, value] of this.map) {
+            console.log(`${key}: ${value.desc}`);
+        }
+        console.log();
     }
 }
 
