@@ -1,6 +1,6 @@
 const [Repository, REPOSITORY_LOCATION] = require('./Repository');
 const [File, FILE_STATUS] = require('./File');
-const MESSAGE = require('./Message');
+const [ERROR, DESC] = require('./Message');
 const Log = require('./Log');
 class Command {
     constructor(locals, remotes) {
@@ -15,21 +15,21 @@ class Command {
 
     set(cmd) {
         const [act, ...opts] = cmd.split(' ');
-        if (!this.map.has(act)) throw MESSAGE.UNDEFINED_COMMAND;
+        if (!this.map.has(act)) throw ERROR.UNDEFINED_COMMAND;
         this.run = this.map.get(act).run.bind(this, opts);
     }
 
     setMap() {
-        this.map.set('init', { run: this.createRepository, desc: "Create new repository in the local." });
-        this.map.set('status', { run: this.showStatus, desc: "Show current situation in the local or remote repository." });
-        this.map.set('checkout', { run: this.checkoutRepository, desc: "Select the repository to control" });
-        this.map.set('new', { run: this.createFile, desc: "Create new file in checkouted repository." });
-        this.map.set('add', { run: this.addStagingArea, desc: "Move a file from working directory to staging area." });
-        this.map.set('commit', { run: this.commitGitRepository, desc: "Move the files from staging area to git repository." });
-        this.map.set('touch', { run: this.touchFile, desc: "Modify a file." });
-        this.map.set('log', { run: this.showLog, desc: "Show logs committed message and list of files." });
-        this.map.set('push', { run: this.pushRemoteRepository, desc: "Move the files from local repository to remote repository." });
-        this.map.set('help', { run: this.showHelp, desc: "Show the information of commands." });
+        this.map.set('init', { run: this.createRepository, desc: DESC.INIT });
+        this.map.set('status', { run: this.showStatus, desc: DESC.STATUS });
+        this.map.set('checkout', { run: this.checkoutRepository, desc: DESC.CHECKOUT });
+        this.map.set('new', { run: this.createFile, desc: DESC.NEW });
+        this.map.set('add', { run: this.addStagingArea, desc: DESC.ADD });
+        this.map.set('commit', { run: this.commitGitRepository, desc: DESC.COMMIT });
+        this.map.set('touch', { run: this.touchFile, desc: DESC.TOUCH });
+        this.map.set('log', { run: this.showLog, desc: DESC.LOG });
+        this.map.set('push', { run: this.pushRemoteRepository, desc: DESC.PUSH });
+        this.map.set('help', { run: this.showHelp, desc: DESC.HELP });
     }
 
     getPrompt() {
@@ -39,7 +39,7 @@ class Command {
 
     createRepository(opts) {
         const repositoryName = opts[0];
-        if (!repositoryName) throw MESSAGE.EMPTY_NAME;
+        if (!repositoryName) throw ERROR.EMPTY_NAME;
         this.locals.set(repositoryName, new Repository(repositoryName, REPOSITORY_LOCATION.LOCAL));
         console.log(`created '${repositoryName}' repository.`);
     }
@@ -51,12 +51,12 @@ class Command {
         } else {
             switch (location) {
                 case 'local':
-                    if (!this.locals.has(repositoryName)) throw MESSAGE.EMPTY_NAME;
+                    if (!this.locals.has(repositoryName)) throw ERROR.UNDEFINED_REPOSITORY;
                     const localRepository = this.locals.get(repositoryName);
                     this.showFilesOfRepository(localRepository);
                     break;
                 case 'remote':
-                    if (!this.remotes.has(repositoryName)) throw MESSAGE.EMPTY_NAME;
+                    if (!this.remotes.has(repositoryName)) throw ERROR.UNDEFINED_REPOSITORY;
                     const remoteRepository = this.remotes.get(repositoryName);
                     this.showFilesOfRepository(remoteRepository);
                     break;
@@ -104,13 +104,13 @@ class Command {
             this.checkouted = null;
         } else {
             const repositoryName = opts[0];
-            if (!this.locals.has(repositoryName)) throw MESSAGE.UNDEFINED_REPOSITORY;
+            if (!this.locals.has(repositoryName)) throw ERROR.UNDEFINED_REPOSITORY;
             this.checkouted = this.locals.get(repositoryName);
         }
     }
 
     createFile(opts) {
-        if (!this.checkouted) throw MESSAGE.UNCHECKOUTED_REPOSITORY;
+        if (!this.checkouted) throw ERROR.UNCHECKOUTED_REPOSITORY;
         const fileName = opts[0];
         const file = new File(fileName);
         this.checkouted.files.push(file);
@@ -122,7 +122,7 @@ class Command {
         const target = this.checkouted.files.filter((file) => {
             return file.name === fileName;
         })[0];
-        if (!target) throw MESSAGE.UNDEFINED_FILE;
+        if (!target) throw ERROR.UNDEFINED_FILE;
         target.status = FILE_STATUS.STAGED;
         this.showCheckoutedFiles();
     }
@@ -146,7 +146,7 @@ class Command {
         const target = this.checkouted.files.filter((file) => {
             return file.name === fileName;
         })[0];
-        if(!target) throw MESSAGE.UNDEFINED_FILE;
+        if (!target) throw ERROR.UNDEFINED_FILE;
         target.status = FILE_STATUS.MODIFIED;
         this.showCheckoutedFiles();
     }
