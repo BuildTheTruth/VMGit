@@ -8,16 +8,16 @@ const ERROR = {
 }
 
 const DESC = {
-    INIT: "Create new repository in the local.",
-    STATUS: "Show current situation in the local or remote repository.",
-    CHECKOUT: "Select the repository to control",
-    NEW: "Create new file in checkouted repository.",
-    ADD: "Move a file from working directory to staging area.",
-    COMMIT: "Move the files from staging area to git repository.",
-    TOUCH: "Modify the file.",
-    LOG: "Show logs committed message and list of files.",
-    PUSH: "Move the files from local repository to remote repository.",
-    HELP: "Show the information of commands."
+    INIT: "Create new repository in the local. \n/>init repository_name",
+    STATUS: "Show current situation in the local or remote repository. \n/>status local repository_name | status remote repository_name | status",
+    CHECKOUT: "Select the repository to control \n/>checkout repository_name",
+    NEW: "Create new file in checkouted repository. \n/>new file_name",
+    ADD: "Move a file from working directory to staging area. \n/>add file_name",
+    COMMIT: "Move the files from staging area to git repository. \n/>commit message",
+    TOUCH: "Modify the file. \n/>touch file_name",
+    LOG: "Show logs committed message and list of files. \n/>log",
+    PUSH: "Move the files from local repository to remote repository. \n/>push",
+    HELP: "Show the information of commands. \n/>help"
 };
 
 module.exports = [ERROR, DESC];
