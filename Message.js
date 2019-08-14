@@ -1,10 +1,10 @@
 const ERROR = {
-    UNDEFINED_COMMAND: "알 수 없는 명령어입니다.",
-    UNDEFINED_REPOSITORY: "존재하지 않는 저장소입니다.",
-    UNCHECKOUTED_REPOSITORY: "먼저 저장소를 선택해주세요.",
-    UNDEFINED_FILE: "존재하지 않는 파일입니다.",
-    EMPTY_NAME: "이름이 입력되지 않았습니다.",
-    EMPTY_COMMIT: "커밋 메시지가 입력되지 않았습니다."
+    UNDEFINED_COMMAND: "This is undefined command.",
+    UNDEFINED_REPOSITORY: "The repository of input name is undefined.",
+    UNCHECKOUTED_REPOSITORY: "Select the repository you want to checkout at first.",
+    UNDEFINED_FILE: "The file of input name is undefined.",
+    EMPTY_NAME: "You should input the name.",
+    EMPTY_COMMIT: "You should input a message for commit."
 }
 
 const DESC = {
