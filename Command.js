@@ -129,7 +129,7 @@ class Command {
     commitGitRepository(opts) {
         const msg = opts.reduce((total, current) => {
             return total + current + ' ';
-        }, "");
+        }, "").slice(0, -1);
         const stagingFiles = this.checkouted.files.filter((file) => {
             return file.status === FILE_STATUS.STAGED;
         });
@@ -150,7 +150,12 @@ class Command {
     }
 
     showLog() {
-
+        this.logs.forEach((log)=> {
+            console.log(`commit "${log.msg}"    ${log.date} ${log.time}`);
+            log.files.forEach((file)=> {
+                console.log(`${file.name}   ${file.date} ${file.time}`);
+            });
+        });
     }
 
     pushRemoteRepository() {
