@@ -161,7 +161,13 @@ class Command {
     }
 
     pushRemoteRepository() {
-
+        if (!this.checkouted) throw ERROR.UNCHECKOUTED_REPOSITORY;
+        let remoteRepository = new Repository(this.checkouted.name, REPOSITORY_LOCATION.REMOTE);
+        remoteRepository.files = this.logs.reduce((total, log) => {
+            return total.concat(log.files);
+        }, []);
+        this.remotes.set(remoteRepository.name, remoteRepository);
+        this.showCheckoutedFiles();
     }
 
     showHelp() {
