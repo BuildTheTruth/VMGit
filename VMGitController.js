@@ -14,7 +14,7 @@ function VMGitContoller() {
 VMGitContoller.prototype = {
     runVmGit: function () {
         console.log("***Virtual Machine Git***");
-        console.log("/>help: give you command information.");
+        console.log("/>help: Show all command information.");
         rl.setPrompt(this.prmt);
         rl.prompt();
         rl.on('line', (cmd) => {
