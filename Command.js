@@ -140,8 +140,13 @@ class Command {
         this.logs.push(new Log(msg, stagingFiles));
     }
 
-    touchFile() {
-
+    touchFile(opts) {
+        const fileName = opts[0];
+        const target = this.checkouted.files.filter((file)=> {
+            return file.name === fileName;
+        })[0];
+        target.status = FILE_STATUS.MODIFIED;
+        this.showCheckoutedFiles();
     }
 
     showLog() {
